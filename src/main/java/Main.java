@@ -14,7 +14,7 @@ public class Main {
             int[] copy = Arrays.copyOf(a, a.length);
             setElephants(i, n, copy, b);
             if (Arrays.equals(copy, b)) {
-                System.out.println(i+1 + " SORTED!");
+                System.out.println(i + " SORTED!");
             }
         }
     }
