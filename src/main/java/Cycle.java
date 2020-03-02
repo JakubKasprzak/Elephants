@@ -4,16 +4,40 @@ import java.util.List;
 public class Cycle {
 
     List<Integer> elephants;
+    private int totalWeight;
+    private int minWeight;
 
-    public Cycle() {
+    Cycle() {
         this.elephants = new ArrayList<>();
     }
 
-    public List<Integer> getElephants() {
+    List<Integer> getElephants() {
         return elephants;
     }
 
     public void setElephants(List<Integer> elephants) {
         this.elephants = elephants;
+    }
+
+    int getTotalWeight() {
+        return totalWeight;
+    }
+
+    void setTotalWeight(int[] weights) {
+        this.totalWeight = elephants.stream().mapToInt(e -> weights[e - 1]).sum();
+    }
+
+    int getMinWeight() {
+        return minWeight;
+    }
+
+    void setMinWeight(int[] weights) {
+        Integer min = Integer.MAX_VALUE;
+        for (Integer elephant : elephants) {
+            if (weights[elephant - 1] < min) {
+                min = weights[elephant - 1];
+            }
+        }
+        this.minWeight = min;
     }
 }

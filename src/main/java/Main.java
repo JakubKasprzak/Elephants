@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -13,13 +14,38 @@ public class Main {
         int[] b = {6, 1, 5, 3, 2, 4};
 
         int[] copy = Arrays.copyOf(a, a.length);
-        getCycles(n, copy, b);
-        if (Arrays.equals(copy, b)) {
-            System.out.println(" SORTED!");
-        }
+        List<Cycle> cycles = getCycles(n, copy, b);
+        setParameters(cycles, m);
+        int w = countResult(cycles, m);
+        System.out.println(w);
     }
 
-    private static void getCycles(int n, int[] a, int[] b) {
+    private static int countResult(List<Cycle> cycles, int[] m) {
+        int w = 0;
+        List<Integer> intList = new ArrayList<>(m.length);
+        for (int i : m) {
+            intList.add(i);
+        }
+        for (Cycle c : cycles) {
+            int rm1 = c.getTotalWeight() + (c.getElephants().size() - 2) * c.getMinWeight();
+            int rm2 = c.getTotalWeight() + c.getMinWeight() + (c.getMinWeight() + 1) * (Collections.min(intList));
+            if (rm1 >= rm2) {
+                w += rm2;
+            } else {
+                w += rm1;
+            }
+        }
+        return w;
+    }
+
+    private static void setParameters(List<Cycle> cycles, int[] m) {
+        cycles.forEach(c -> {
+            c.setTotalWeight(m);
+            c.setMinWeight(m);
+        });
+    }
+
+    private static List<Cycle> getCycles(int n, int[] a, int[] b) {
         boolean[] isProperPosition = new boolean[n];
         List<Cycle> cycles = new ArrayList<>();
         for (int i = 0; i < n; i++) {
@@ -29,22 +55,16 @@ public class Main {
         for (int i = 0; i < n; i++) {
             if (!isProperPosition[i]) {
                 int x = i;
-                List<Integer> cycle = new ArrayList<>();
                 c++;
                 cycles.add(new Cycle());
                 while (!isProperPosition[x]) {
                     isProperPosition[x] = true;
-                    cycle.add(b[x]);
-                    cycles.get(c-1).elephants.add(b[x]);
+                    cycles.get(c - 1).elephants.add(b[x]);
                     x = changePlaces(a, x, b[x]);
-                    System.out.println("Cycle " + c + " ");
-                    System.out.println("Switched numbers so far: " + cycle.toString());
-                    System.out.println("Result so far: " + Arrays.toString(a));
-                    System.out.println(Arrays.toString(isProperPosition));
                 }
             }
         }
-        cycles.forEach(cyc -> System.out.println(cyc.elephants));
+        return cycles;
     }
 
     private static int changePlaces(int[] array, int i, int y) {
