@@ -1,23 +1,35 @@
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
 
-public class Main {
+public class Parade {
+    private static FileProcessor fp = new FileProcessor();
+    private static final String filepath = "src/main/resources/slo3.in";
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
+        resolveParade(fp.readLinesFromFile(filepath));
+    }
 
-        int n = 6;
-        int[] m = {2400, 2000, 1200, 2400, 1600, 4000};
-        int[] a = {6, 2, 1, 4, 5, 3};
-        int[] b = {6, 1, 5, 3, 2, 4};
-
-        int[] copy = Arrays.copyOf(a, a.length);
-        List<Cycle> cycles = getCycles(n, copy, b);
+    private static void resolveParade(List<String> parade) {
+        int n = Integer.parseInt(parade.get(0));
+        int[] m = convert(parade, 1);
+        int[] a = convert(parade, 2);
+        int[] b = convert(parade, 3);
+        List<Cycle> cycles = getCycles(n, a, b);
         setParameters(cycles, m);
         int w = countResult(cycles, m);
         System.out.println(w);
+    }
+
+    private static int[] convert(List<String> parade, int l) {
+        String[] weights = parade.get(l).split(" ");
+        int[] x = new int[weights.length];
+        for (int i = 0; i < weights.length; i++) {
+            x[i] = Integer.parseInt(weights[i]);
+        }
+        return x;
     }
 
     private static int countResult(List<Cycle> cycles, int[] m) {
@@ -28,7 +40,7 @@ public class Main {
         }
         for (Cycle c : cycles) {
             int rm1 = c.getTotalWeight() + (c.getElephants().size() - 2) * c.getMinWeight();
-            int rm2 = c.getTotalWeight() + c.getMinWeight() + (c.getMinWeight() + 1) * (Collections.min(intList));
+            int rm2 = c.getTotalWeight() + c.getMinWeight() + (c.getElephants().size() + 1) * (Collections.min(intList));
             if (rm1 >= rm2) {
                 w += rm2;
             } else {
@@ -60,14 +72,14 @@ public class Main {
                 while (!isProperPosition[x]) {
                     isProperPosition[x] = true;
                     cycles.get(c - 1).elephants.add(b[x]);
-                    x = changePlaces(a, x, b[x]);
+                    x = switchPlaces(a, x, b[x]);
                 }
             }
         }
         return cycles;
     }
 
-    private static int changePlaces(int[] array, int i, int y) {
+    private static int switchPlaces(int[] array, int i, int y) {
         int x = array[i];
         int j = IntStream.range(0, array.length)
             .filter(a -> y == array[a])
