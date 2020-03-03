@@ -6,7 +6,7 @@ import java.util.stream.IntStream;
 
 public class Parade {
     private static FileProcessor fp = new FileProcessor();
-    private static final String filepath = "src/main/resources/slo3.in";
+    private static final String filepath = "src/main/resources/slo1.in";
 
     public static void main(String[] args) throws FileNotFoundException {
         resolveParade(fp.readLinesFromFile(filepath));
@@ -30,31 +30,6 @@ public class Parade {
             x[i] = Integer.parseInt(weights[i]);
         }
         return x;
-    }
-
-    private static int countResult(List<Cycle> cycles, int[] m) {
-        int w = 0;
-        List<Integer> intList = new ArrayList<>(m.length);
-        for (int i : m) {
-            intList.add(i);
-        }
-        for (Cycle c : cycles) {
-            int rm1 = c.getTotalWeight() + (c.getElephants().size() - 2) * c.getMinWeight();
-            int rm2 = c.getTotalWeight() + c.getMinWeight() + (c.getElephants().size() + 1) * (Collections.min(intList));
-            if (rm1 >= rm2) {
-                w += rm2;
-            } else {
-                w += rm1;
-            }
-        }
-        return w;
-    }
-
-    private static void setParameters(List<Cycle> cycles, int[] m) {
-        cycles.forEach(c -> {
-            c.setTotalWeight(m);
-            c.setMinWeight(m);
-        });
     }
 
     private static List<Cycle> getCycles(int n, int[] a, int[] b) {
@@ -88,5 +63,30 @@ public class Parade {
         array[j] = x;
         array[i] = y;
         return j;
+    }
+
+    private static void setParameters(List<Cycle> cycles, int[] m) {
+        cycles.forEach(c -> {
+            c.setTotalWeight(m);
+            c.setMinWeight(m);
+        });
+    }
+
+    private static int countResult(List<Cycle> cycles, int[] m) {
+        int w = 0;
+        List<Integer> intList = new ArrayList<>(m.length);
+        for (int i : m) {
+            intList.add(i);
+        }
+        for (Cycle c : cycles) {
+            int rm1 = c.getTotalWeight() + (c.getElephants().size() - 2) * c.getMinWeight();
+            int rm2 = c.getTotalWeight() + c.getMinWeight() + (c.getElephants().size() + 1) * (Collections.min(intList));
+            if (rm1 >= rm2) {
+                w += rm2;
+            } else {
+                w += rm1;
+            }
+        }
+        return w;
     }
 }
