@@ -1,36 +1,114 @@
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.InputMismatchException;
 import java.util.List;
+import java.util.Scanner;
 import java.util.stream.IntStream;
 
 public class Parade {
-    private static FileProcessor fp = new FileProcessor();
-    private static final String filepath = "src/main/resources/slo1.in";
 
-    public static void main(String[] args) throws FileNotFoundException {
-        resolveParade(fp.readLinesFromFile(filepath));
+    public static void main(String[] args) {
+        Scanner in = new Scanner(System.in);
+        int n = getNumber(in);
+        int[] m = new int[n];
+        int[] a = new int[n];
+        int[] b = new int[n];
+        System.out.println("put in masses");
+        fillMasses(in, n, m);
+        System.out.println("put in a");
+        fillArray(in, n, a);
+        System.out.println("put in b");
+        fillArray(in, n, b);
+        resolveParade(n, m, a, b);
     }
 
-    private static void resolveParade(List<String> parade) {
-        int n = Integer.parseInt(parade.get(0));
-        int[] m = convert(parade, 1);
-        int[] a = convert(parade, 2);
-        int[] b = convert(parade, 3);
+    private static int getNumber(Scanner in) {
+        boolean success = false;
+        int n = 0;
+        while (!success) {
+            try {
+                n = in.nextInt();
+                if (n <= 1) {
+                    throw new IllegalArgumentException("Number cannot be lower than 2!");
+                }
+                success = true;
+            } catch (InputMismatchException e) {
+                in.next();
+                System.out.println("You have entered invalid data");
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+        return n;
+    }
+
+    private static void fillArray(Scanner in, int n, int[] array) {
+        HashSet<Integer> set = new HashSet<>();
+        for (int i = 0; i < n; i++) {
+            boolean success = false;
+            int x;
+            while (!success) {
+                try {
+                    x = in.nextInt();
+                    if (set.contains(x)) {
+                        throw new IllegalArgumentException("Elephant " + x + " is already in set!");
+                    } else {
+                        set.add(x);
+                    }
+                    if (x > n || x <= 0) {
+                        throw new IllegalArgumentException("There are " + n + " elephants in parade! Put number from 1 to " + n);
+                    } else {
+                        array[i] = x;
+                        success = true;
+                    }
+                } catch (IllegalArgumentException e) {
+                    System.out.println(e.getMessage());
+                } catch (InputMismatchException e) {
+                    System.out.println("You can put only an integer!");
+                    in.next();
+                }
+            }
+        }
+    }
+
+    private static void fillMasses(Scanner in, int n, int[] array) {
+        for (int i = 0; i < n; i++) {
+            boolean success = false;
+            while (!success) {
+                try {
+                    int m = in.nextInt();
+                    if (m <= 0) {
+                        throw new IllegalArgumentException("Mass cannot be lower than 1!");
+                    } else {
+                        array[i] = m;
+                        success = true;
+                    }
+                } catch (IllegalArgumentException e) {
+                    System.out.println(e.getMessage());
+                } catch (InputMismatchException e) {
+                    System.out.println("You can put only an integer!");
+                    in.next();
+                }
+            }
+        }
+    }
+
+    private static void resolveParade(int n, int[] m, int[] a, int[] b) {
         List<Cycle> cycles = getCycles(n, a, b);
         setParameters(cycles, m);
         int w = countResult(cycles, m);
         System.out.println(w);
     }
 
-    private static int[] convert(List<String> parade, int l) {
-        String[] weights = parade.get(l).split(" ");
-        int[] x = new int[weights.length];
-        for (int i = 0; i < weights.length; i++) {
-            x[i] = Integer.parseInt(weights[i]);
-        }
-        return x;
-    }
+//    private static int[] convert(List<String> parade, int l) {
+//        String[] weights = parade.get(l).split(" ");
+//        int[] x = new int[weights.length];
+//        for (int i = 0; i < weights.length; i++) {
+//            x[i] = Integer.parseInt(weights[i]);
+//        }
+//        return x;
+//    }
 
     private static List<Cycle> getCycles(int n, int[] a, int[] b) {
         boolean[] isProperPosition = new boolean[n];
